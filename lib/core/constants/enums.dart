@@ -1,0 +1,1 @@
+enum PayOptions {daysFree , monthly, yearly}

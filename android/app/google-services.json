@@ -1,0 +1,106 @@
+{
+  "project_info": {
+    "project_number": "970305362077",
+    "project_id": "qaproject-351eb",
+    "storage_bucket": "qaproject-351eb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:970305362077:android:1efe59fbffc0f69af09c74",
+        "android_client_info": {
+          "package_name": "com.example.testqa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "970305362077-imji8ndhb1p9n0p3t0cad4kipduanii5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaPG9EBidhAxjvMD3nTjneE-3VitAdmGM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "970305362077-imji8ndhb1p9n0p3t0cad4kipduanii5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "970305362077-1a90pqjd7ngflrjsb9e2ve0nkq8phj0q.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "login.bahi.ae"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:970305362077:android:a5b59acdd72cb53bf09c74",
+        "android_client_info": {
+          "package_name": "login.bahi.ae"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "970305362077-3e5bp29ahiipvmhpf9ajaob98m3ht00g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "login.bahi.ae",
+            "certificate_hash": "9bf84806b724301d9b76c367ea3c2e2a19a1f4a9"
+          }
+        },
+        {
+          "client_id": "970305362077-6bvcmk2sl5ni9igqcgo8if04gvb48b0j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "login.bahi.ae",
+            "certificate_hash": "5e65f42b28115d991f580f3be1944f35d1f3ec7a"
+          }
+        },
+        {
+          "client_id": "970305362077-d86d0a20633ejutmbchk3pgmvr7af88e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "login.bahi.ae",
+            "certificate_hash": "e4a75e54e6e06686baf6e1134d6925c93d486e06"
+          }
+        },
+        {
+          "client_id": "970305362077-imji8ndhb1p9n0p3t0cad4kipduanii5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaPG9EBidhAxjvMD3nTjneE-3VitAdmGM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "970305362077-imji8ndhb1p9n0p3t0cad4kipduanii5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "970305362077-1a90pqjd7ngflrjsb9e2ve0nkq8phj0q.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "login.bahi.ae"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
