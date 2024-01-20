@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:testqa/core/helpers/app_context.dart';
 import 'package:testqa/core/helpers/get_device_id.dart';
 import 'package:testqa/screens/payment/payment_imports.dart';
 import 'package:image_cropper/image_cropper.dart';
