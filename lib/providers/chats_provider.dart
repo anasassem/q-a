@@ -20,17 +20,17 @@ class ChatProvider with ChangeNotifier {
       required String msg,
       required String chosenModelId}) async {
     if (chosenModelId.toLowerCase().startsWith("gpt")) {
-      chatList.addAll(await ApiService.sendMessageGPT(
+      chatList.addAll((await ApiService.sendMessageGPT(
         message: msg,
         modelId: chosenModelId,
         tokens: tokens,
-      ));
+      )) as Iterable<ChatModel>);
     } else {
-      chatList.addAll(await ApiService.sendMessage(
+      chatList.addAll((await ApiService.sendMessage(
         message: msg,
         tokens: tokens,
         modelId: chosenModelId,
-      ));
+      )) as Iterable<ChatModel>);
     }
     notifyListeners();
   }

@@ -1,7 +1,8 @@
 part of 'home_main_imports.dart';
 
 class HomeMain extends StatefulWidget {
-  final String deviceId ;
+  final String deviceId;
+
   const HomeMain({super.key, required this.deviceId});
 
   @override
@@ -18,29 +19,36 @@ class _HomeMainState extends State<HomeMain> {
   }
 
   @override
-  Widget build(BuildContext context)  {
-
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
+        elevation: 2,
+        leading: Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: Image.asset(Res.logo),
+        ),
         centerTitle: true,
-        automaticallyImplyLeading: false,
-        title: const Text("Q & A",
-            style: AppTextStyle.s16_w700(color: Colors.black)),
+        title: const Text(
+          "Q & A",
+          style: AppTextStyle.s24_w700(
+            color: Colors.black,
+          ),
+        ),
       ),
       body: Container(
         padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 20.w),
         child: ListView(
           children: [
-             Text(tr("tools", context),
+            Text(tr("tools", context),
                 style: const AppTextStyle.s16_w700(color: Colors.white)),
             Gaps.vGap15,
             BlocBuilder<GenericBloc<List<dynamic>>,
                 GenericState<List<dynamic>>>(
               bloc: controller.bannersBloc,
               builder: (context, state) {
-              if(state is GenericUpdateState){
+                if (state is GenericUpdateState) {
                   return SizedBox(
                     height: 120.h,
                     child: Swiper(
@@ -53,8 +61,8 @@ class _HomeMainState extends State<HomeMain> {
                                 alignment: AlignmentDirectional.topStart,
                                 height: 60,
                                 width: 60,
-                                margin: const EdgeInsetsDirectional.only(
-                                    start: 5),
+                                margin:
+                                    const EdgeInsetsDirectional.only(start: 5),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15),
                                   border: Border.all(
@@ -63,11 +71,11 @@ class _HomeMainState extends State<HomeMain> {
                                   image: DecorationImage(
                                     image: (state.data[index] is String
                                         ? NetworkImage(
-                                      state.data[index],
-                                    )
+                                            state.data[index],
+                                          )
                                         : FileImage(
-                                      state.data[index],
-                                    )) as ImageProvider,
+                                            state.data[index],
+                                          )) as ImageProvider,
                                     fit: BoxFit.fill,
                                   ),
                                 ),
@@ -80,28 +88,34 @@ class _HomeMainState extends State<HomeMain> {
                       itemCount: state.data.length,
                     ),
                   );
-                }else {
-                  return  Container();
+                } else {
+                  return Container();
                 }
               },
             ),
-            Gaps.vGap15,
-             Text(
-              tr("myHistory", context),
-              style: const AppTextStyle.s16_w700(color: Colors.white),
+            Gaps.vGap32,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: Text(
+                tr("myHistory", context),
+                style: const AppTextStyle.s18_w600(color: Colors.black),
+              ),
             ),
             Gaps.vGap15,
             FutureBuilder<QuerySnapshot>(
-              future: FirebaseFirestore.instance.collection("history")
+              future: FirebaseFirestore.instance
+                  .collection("history")
                   .doc(widget.deviceId)
                   .collection("history")
                   .get(),
               builder: (context, AsyncSnapshot snapshot) {
                 if (snapshot.connectionState != ConnectionState.done) {
-                  return  Padding(
-                    padding:  EdgeInsets.only(top: 100.h),
+                  return Padding(
+                    padding: EdgeInsets.only(top: 100.h),
                     child: Center(
-                      child: CircularProgressIndicator(color: primaryColor,),
+                      child: CircularProgressIndicator(
+                        color: primaryColor,
+                      ),
                     ),
                   );
                 }
@@ -119,18 +133,22 @@ class _HomeMainState extends State<HomeMain> {
                     ),
                   ),
                   child: Column(
-                    children: List.generate(history.length, (index) => Container(
-                      width: MediaQuery.of(context).size.width,
-                      margin: const EdgeInsets.symmetric(vertical: Dimens.dp6, horizontal: Dimens.dp10),
-                      padding: const EdgeInsets.all(Dimens.dp10),
-                      decoration: CustomDecoration(),
-                      child: Text(
-                        history[index],
-                        textAlign: TextAlign.start,
-                        style:
-                         AppTextStyle.s14_w600(color: Colors.black),
-                      ),
-                    )),
+                    children: List.generate(
+                        history.length,
+                        (index) => Container(
+                              width: MediaQuery.of(context).size.width,
+                              margin: const EdgeInsets.symmetric(
+                                  vertical: Dimens.dp6,
+                                  horizontal: Dimens.dp10),
+                              padding: const EdgeInsets.all(Dimens.dp10),
+                              decoration: CustomDecoration(),
+                              child: Text(
+                                history[index],
+                                textAlign: TextAlign.start,
+                                style:
+                                    AppTextStyle.s14_w600(color: Colors.black),
+                              ),
+                            )),
                   ),
                 );
               },

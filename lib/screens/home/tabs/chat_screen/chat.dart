@@ -4,17 +4,11 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-
-import 'package:testqa/core/helpers/dio_helper.dart';
+import 'package:testqa/core/helpers/app_context.dart';
 import 'package:testqa/core/helpers/get_device_id.dart';
-import 'package:testqa/models/ocr_model.dart';
-import 'package:testqa/screens/ocr/ocr_imports.dart';
 import 'package:testqa/screens/payment/payment_imports.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_tesseract_ocr/android_ios.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -45,7 +39,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   bool _isTyping = false;
-  late String question;
+  String question = "";
 
   late TextEditingController textEditingController;
   late ScrollController _listScrollController;
@@ -56,7 +50,6 @@ class _ChatScreenState extends State<ChatScreen> {
     _listScrollController = ScrollController();
     textEditingController = TextEditingController();
     focusNode = FocusNode();
-
     super.initState();
   }
 
@@ -149,6 +142,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     IconButton(
                       onPressed: () async {
                         await sendMessageFCT(
+                          isFormImage: false,
                           modelsProvider: modelsProvider,
                           chatProvider: chatProvider,
                         );
@@ -176,7 +170,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         //runFilePiker(ImageSource.gallery);
                         var image = await pickImage();
                         if (image != null) {
-                          await uploadImage(image);
+                          await uploadImage(image, context);
                         }
                       },
                       icon: Icon(
@@ -199,7 +193,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final pickedFile = await ImagePicker()
         .pickImage(source: ImageSource, requestFullMetadata: true);
     if (pickedFile != null) {
-      CroppedFile? croppedFile = await ImageCropper().cropImage(
+       await ImageCropper().cropImage(
         sourcePath: pickedFile.path,
         aspectRatioPresets: [
           CropAspectRatioPreset.square,
@@ -223,9 +217,10 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ],
       );
-     /* _ocr(croppedFile, "m");*/
+      /* _ocr(croppedFile, "m");*/
     }
   }
+
   bool bload = false;
 
   Future<File?> pickImage() async {
@@ -243,11 +238,12 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
         uiSettings: [
           AndroidUiSettings(
-              toolbarTitle: 'Cropper',
-              toolbarColor: Colors.deepOrange,
-              toolbarWidgetColor: Colors.white,
-              initAspectRatio: CropAspectRatioPreset.original,
-              lockAspectRatio: false),
+            toolbarTitle: 'Cropper',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false,
+          ),
           IOSUiSettings(
             title: 'Cropper',
           ),
@@ -261,38 +257,38 @@ class _ChatScreenState extends State<ChatScreen> {
     return null;
   }
 
-  Future<void> uploadImage(imageFile) async {
-    String stringValue = 'm';
+  Future<void> uploadImage(imageFile, BuildContext context) async {
+    final modelsProvider = Provider.of<ModelsProvider>(context, listen: false);
+    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
     String apiUrl = "https://pyocr-b3169decc152.herokuapp.com/ocr";
-
     var uri = Uri.parse(apiUrl);
     var request = http.MultipartRequest('POST', uri);
-
     request.files.add(await http.MultipartFile.fromPath(
       'image', // The field name for file in your API
       imageFile!.path,
     ));
-
-    // Add any other fields
     request.fields['language'] = 'm';
-
     try {
       var response = await request.send();
-
       if (response.statusCode == 200) {
-        print("Image uploaded successfully");
         var responseBody = await http.Response.fromStream(response);
-
-        // Print the result
-        print(responseBody.body);
-        textEditingController.text = jsonDecode(responseBody.body)["result"];
+        question = jsonDecode(responseBody.body)["result"];
+        log(question);
+        String textBefore =question ;
+        question = "write the equation and solve it $textBefore";
+        sendMessageFCT(
+          isFormImage: true,
+          modelsProvider: modelsProvider,
+          chatProvider: chatProvider,
+        );
       } else {
-        print("Image upload failed");
+        log("Image upload failed");
       }
     } catch (e) {
-      print("Error occurred: $e");
+      log("Error occurred: $e");
     }
   }
+
 // Usage
 
 /*  OcrModel? ocrDate;
@@ -325,8 +321,16 @@ class _ChatScreenState extends State<ChatScreen> {
       curve: Curves.easeOut,
     );
   }
+  String _question (bool isFromImage){
+    if(isFromImage) {
+      return question;
+    } else {
+      return textEditingController.text;
+    }
+  }
 
   Future<void> sendMessageFCT({
+    required bool isFormImage,
     required ModelsProvider modelsProvider,
     required ChatProvider chatProvider,
   }) async {
@@ -341,7 +345,7 @@ class _ChatScreenState extends State<ChatScreen> {
       );
       return;
     }
-    if (textEditingController.text.isEmpty) {
+    if (_question(isFormImage).isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: TextWidget(
@@ -354,17 +358,18 @@ class _ChatScreenState extends State<ChatScreen> {
     }
     try {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
-      String msg = textEditingController.text;
+      String msg = _question(isFormImage);
       setState(() {
         _isTyping = true;
         // chatList.add(ChatModel(msg: textEditingController.text, chatIndex: 0));
         chatProvider.addUserMessage(msg: msg);
-        textEditingController.clear();
+        if(!isFormImage){
+          textEditingController.clear();
+        }
         focusNode.unfocus();
       });
       var uid = await GetDeviceId().deviceId;
-      var user =
-          await FirebaseFirestore.instance.collection("users").doc(uid).get();
+      var user = await FirebaseFirestore.instance.collection("users").doc(uid).get();
       var parsedUser = UserModel.fromJson(user.data()!);
       if (parsedUser.paymentType == "none") {
         if (parsedUser.usedFree == true) {
@@ -399,7 +404,7 @@ class _ChatScreenState extends State<ChatScreen> {
         chosenModelId: modelsProvider.getCurrentModel,
         tokens: parsedUser.isPayment == true ? 4000 : 200,
       );
-
+      _isTyping = false;
       await firestore.collection("history").doc(uid).collection("history").add(
         {"msg": msg.trim()},
       );
