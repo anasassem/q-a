@@ -10,7 +10,7 @@ class Ocr extends StatefulWidget {
 }
 
 class _OcrState extends State<Ocr> with WidgetsBindingObserver {
-  final textRecognizer = GoogleMlKit.vision.textRecognizer(script:TextRecognitionScript.latin);
+ /* final textRecognizer = GoogleMlKit.vision.textRecognizer(script:TextRecognitionScript.latin);*/
   final OcrController controller = OcrController();
   late final Future<void> _future;
   CameraController? _cameraController;
@@ -20,7 +20,7 @@ class _OcrState extends State<Ocr> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _stopCamera();
-    textRecognizer.close();
+    /*textRecognizer.close();*/
     super.dispose();
   }
   @override
@@ -79,7 +79,7 @@ class _OcrState extends State<Ocr> with WidgetsBindingObserver {
                         Expanded(
                           child: Container(),
                         ),
-                        InkWell(
+                     /*   InkWell(
                           onTap: _scanImage,
                           child: Container(
                             decoration: BoxDecoration(
@@ -89,7 +89,7 @@ class _OcrState extends State<Ocr> with WidgetsBindingObserver {
                             padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 15.0),
                             child:  const Text('Scan text', style: AppTextStyle.s12_w400(color: Colors.white)),
                           ),
-                        ),
+                        ),*/
                       ],
                     )
                   : Center(
@@ -161,7 +161,7 @@ class _OcrState extends State<Ocr> with WidgetsBindingObserver {
     setState(() {});
   }
 
-  Future<void> _scanImage() async {
+ /* Future<void> _scanImage() async {
     if (_cameraController == null) return;
     try {
 
@@ -213,7 +213,7 @@ class _OcrState extends State<Ocr> with WidgetsBindingObserver {
       );
     }
 
-  }
+  }*/
   bool isMathOperator(String text) {
     final mathOperatorSet = {'+', '-', '*', '/', '√', '^', '÷'};
     for (String operator in mathOperatorSet) {

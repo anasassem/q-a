@@ -166,11 +166,62 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                     IconButton(
                       onPressed: () async {
-                        //runFilePiker(ImageSource.gallery);
-                        var image = await pickImage();
-                        if (image != null) {
-                          await uploadImage(image, context);
-                        }
+                        showDialog(
+                            context: context,
+                            builder: (_) => AlertDialog(
+                                  title: const Text(
+                                      "choose the type of the image"),
+                                  content: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      InkWell(
+                                        onTap: () async {
+                                          //runFilePiker(ImageSource.gallery);
+                                          var image = await pickImage();
+                                          if (image != null) {
+                                            await uploadImage(
+                                                image, context, "m");
+                                          }
+                                        },
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          height: 100,
+                                          width: 120,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              color: primaryColor),
+                                          child: Text(
+                                            "Math Eqution",
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                      InkWell(
+                                        onTap: () async {
+                                          //runFilePiker(ImageSource.gallery);
+                                          var image = await pickImage();
+                                          if (image != null) {
+                                            await uploadImage(
+                                                image, context, "l");
+                                          }
+                                        },
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          height: 100,
+                                          width: 120,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              color: Colors.grey),
+                                          child: Text("Simple Text"),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ));
                       },
                       icon: Icon(
                         Icons.camera,
@@ -192,7 +243,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final pickedFile = await ImagePicker()
         .pickImage(source: ImageSource, requestFullMetadata: true);
     if (pickedFile != null) {
-       await ImageCropper().cropImage(
+      await ImageCropper().cropImage(
         sourcePath: pickedFile.path,
         aspectRatioPresets: [
           CropAspectRatioPreset.square,
@@ -256,7 +307,8 @@ class _ChatScreenState extends State<ChatScreen> {
     return null;
   }
 
-  Future<void> uploadImage(imageFile, BuildContext context) async {
+  Future<void> uploadImage(
+      imageFile, BuildContext context, String imageType) async {
     final modelsProvider = Provider.of<ModelsProvider>(context, listen: false);
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
     String apiUrl = "https://pyocr-b3169decc152.herokuapp.com/ocr";
@@ -266,15 +318,18 @@ class _ChatScreenState extends State<ChatScreen> {
       'image', // The field name for file in your API
       imageFile!.path,
     ));
-    request.fields['language'] = 'm';
+    request.fields['language'] = imageType;
     try {
       var response = await request.send();
       if (response.statusCode == 200) {
         var responseBody = await http.Response.fromStream(response);
         question = jsonDecode(responseBody.body)["result"];
         log(question);
-        String textBefore =question ;
-        question = "write the equation and solve it $textBefore";
+        String textBefore = question;
+        if (imageType == "m") {
+          question = "write the equation and solve it $textBefore";
+        }
+
         sendMessageFCT(
           isFormImage: true,
           modelsProvider: modelsProvider,
@@ -320,8 +375,9 @@ class _ChatScreenState extends State<ChatScreen> {
       curve: Curves.easeOut,
     );
   }
-  String _question (bool isFromImage){
-    if(isFromImage) {
+
+  String _question(bool isFromImage) {
+    if (isFromImage) {
       return question;
     } else {
       return textEditingController.text;
@@ -362,13 +418,14 @@ class _ChatScreenState extends State<ChatScreen> {
         _isTyping = true;
         // chatList.add(ChatModel(msg: textEditingController.text, chatIndex: 0));
         chatProvider.addUserMessage(msg: msg);
-        if(!isFormImage){
+        if (!isFormImage) {
           textEditingController.clear();
         }
         focusNode.unfocus();
       });
       var uid = await GetDeviceId().deviceId;
-      var user = await FirebaseFirestore.instance.collection("users").doc(uid).get();
+      var user =
+          await FirebaseFirestore.instance.collection("users").doc(uid).get();
       var parsedUser = UserModel.fromJson(user.data()!);
       if (parsedUser.paymentType == "none") {
         if (parsedUser.usedFree == true) {
