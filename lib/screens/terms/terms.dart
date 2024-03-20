@@ -33,7 +33,10 @@ class _TermsState extends State<Terms> {
           ),
         ),
         centerTitle: true,
-        title:  Text(tr("termsAndConditions", context), style: const AppTextStyle.s16_w700(color: Colors.black),),
+        title: Text(
+          tr("termsAndConditions", context),
+          style: const AppTextStyle.s16_w700(color: Colors.black),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(
@@ -41,7 +44,9 @@ class _TermsState extends State<Terms> {
           vertical: Dimens.dp20,
         ),
         child: BlocBuilder<GenericBloc<String>, GenericState<String>>(
-          bloc: controller.termsBloc,
+          bloc: tr("termsAndConditions", context) == "الشروط و الأحكام"
+              ? controller.termsBlocAr
+              : controller.termsBlocEn,
           builder: (context, state) {
             return Column(
               children: [

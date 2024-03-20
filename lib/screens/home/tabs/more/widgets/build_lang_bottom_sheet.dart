@@ -27,7 +27,7 @@ class BuildLangBottomSheet extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               child:  Text(
                 textAlign: TextAlign.center,
-                "English",
+                tr("en",context),
                 style: AppTextStyle.s14_w600(color: Colors.black),
               ),
             ),
@@ -50,7 +50,7 @@ class BuildLangBottomSheet extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               child:  Text(
                 textAlign: TextAlign.center,
-                "Arabic",
+                tr("ar",context),
                 style: AppTextStyle.s14_w600(color: Colors.black),
               ),
             ),

@@ -15,6 +15,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../constants/constants.dart';
+import '../../../../core/helpers/di.dart';
+import '../../../../core/helpers/loading_helper.dart';
 import '../../../../core/localization/localization_methods.dart';
 import '../../../../core/themes/app_text_style.dart';
 import '../../../../models/user_model.dart';
@@ -39,7 +41,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   bool _isTyping = false;
   String question = "";
-
+  bool isMath = false;
   late TextEditingController textEditingController;
   late ScrollController _listScrollController;
   late FocusNode focusNode;
@@ -48,6 +50,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     _listScrollController = ScrollController();
     textEditingController = TextEditingController();
+
     focusNode = FocusNode();
     super.initState();
   }
@@ -57,7 +60,9 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     final modelsProvider = Provider.of<ModelsProvider>(context);
     final chatProvider = Provider.of<ChatProvider>(context);
+    // modelsProvider.getAllModels(context);
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -85,151 +90,274 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Column(
           children: [
             Expanded(
-              child: SingleChildScrollView(
-                controller: _listScrollController,
-                child: Column(
-                  children: List.generate(
-                    chatProvider.getChatList.length,
-                    (index) => ChatWidget(
-                      msg: chatProvider.getChatList[index].msg,
-                      // chatList[index].msg,
-                      chatIndex: chatProvider.getChatList[index].chatIndex,
-                      //chatList[index].chatIndex,
-                      shouldAnimate:
-                          chatProvider.getChatList.length - 1 == index,
-                      listScrollController: _listScrollController,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            if (_isTyping) ...[
-              SpinKitThreeBounce(
-                color: primaryColor,
-                size: 18,
-              ),
-            ],
-            const SizedBox(
-              height: 15,
-            ),
-            Material(
-              color: cardColor,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        focusNode: focusNode,
-                        maxLines: null,
-                        style: TextStyle(color: primaryColor),
-                        controller: textEditingController,
-                        // onSubmitted: (value) async {
-                        //   await sendMessageFCT(
-                        //     modelsProvider: modelsProvider,
-                        //     chatProvider: chatProvider,
-                        //   );
-                        // },
-                        decoration: InputDecoration.collapsed(
-                          hintText: tr("howCanIHelpU", context),
-                          hintStyle: TextStyle(
-                            color: primaryColor,
-                          ),
+              child: ListView(
+                children: [
+                  SingleChildScrollView(
+                    controller: _listScrollController,
+                    child: Column(
+                      children: List.generate(
+                        chatProvider.getChatList.length,
+                        (index) => ChatWidget(
+                          isMath: chatProvider.getChatList[index].isMath,
+                          msg: chatProvider.getChatList[index].msg,
+                          // chatList[index].msg,
+                          chatIndex: chatProvider.getChatList[index].chatIndex,
+                          //chatList[index].chatIndex,
+                          shouldAnimate:
+                              chatProvider.getChatList.length - 1 == index,
+                          listScrollController: _listScrollController,
                         ),
                       ),
                     ),
-                    IconButton(
-                      onPressed: () async {
-                        await sendMessageFCT(
-                          isFormImage: false,
-                          modelsProvider: modelsProvider,
-                          chatProvider: chatProvider,
-                        );
-                      },
-                      icon: Icon(
-                        Icons.send,
-                        color: primaryColor,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () async {
-                        if (await Permission.camera.isGranted) {
-                          runFilePiker(ImageSource.camera);
-                        } else {
-                          await Permission.camera.request();
-                        }
-                      },
-                      icon: Icon(
-                        Icons.camera_alt,
-                        color: primaryColor,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () async {
-                        showDialog(
-                            context: context,
-                            builder: (_) => AlertDialog(
-                                  title: const Text(
-                                      "choose the type of the image"),
-                                  content: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      InkWell(
-                                        onTap: () async {
-                                          //runFilePiker(ImageSource.gallery);
-                                          var image = await pickImage();
-                                          if (image != null) {
-                                            await uploadImage(
-                                                image, context, "m");
-                                          }
-                                        },
-                                        child: Container(
-                                          alignment: Alignment.center,
-                                          height: 100,
-                                          width: 120,
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              color: primaryColor),
-                                          child: Text(
-                                            "Math Eqution",
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                        ),
-                                      ),
-                                      InkWell(
-                                        onTap: () async {
-                                          //runFilePiker(ImageSource.gallery);
-                                          var image = await pickImage();
-                                          if (image != null) {
-                                            await uploadImage(
-                                                image, context, "l");
-                                          }
-                                        },
-                                        child: Container(
-                                          alignment: Alignment.center,
-                                          height: 100,
-                                          width: 120,
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              color: Colors.grey),
-                                          child: Text("Simple Text"),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ));
-                      },
-                      icon: Icon(
-                        Icons.camera,
-                        color: primaryColor,
-                      ),
+                  ),
+                  if (_isTyping) ...[
+                    SpinKitThreeBounce(
+                      color: primaryColor,
+                      size: 18,
                     ),
                   ],
-                ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  Material(
+                    color: cardColor,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              maxLines: null,
+                              focusNode: focusNode,
+                              style: TextStyle(color: primaryColor),
+                              controller: textEditingController,
+                              // onSubmitted: (value) async {
+                              //   await sendMessageFCT(
+                              //     modelsProvider: modelsProvider,
+                              //     chatProvider: chatProvider,
+                              //   );
+                              // },
+                              decoration: InputDecoration.collapsed(
+                                hintText: tr("howCanIHelpU", context),
+                                hintStyle: TextStyle(
+                                  color: primaryColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              await sendMessageFCT(
+                                isFormImage: false,
+                                modelsProvider: modelsProvider,
+                                chatProvider: chatProvider,
+                              );
+                            },
+                            icon: Icon(
+                              Icons.send,
+                              color: primaryColor,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              if (await Permission.camera.isGranted) {
+                                //runFilePiker(ImageSource.camera);
+                                showDialog(
+                                    context: context,
+                                    builder: (_) => AlertDialog(
+                                          title: Text(tr("chooseImageType", context)),
+                                          content: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Expanded(
+                                                child: InkWell(
+                                                  onTap: () async {
+                                                    //runFilePiker(ImageSource.gallery);
+                                                    var image = await pickImage();
+                                                    if (image != null) {
+                                                      setState(() {
+                                                        isMath = true;
+                                                      });
+                                                      await uploadImage(
+                                                              image,
+                                                              context,
+                                                              "m",
+                                                              tr("simpleText",
+                                                                          context) ==
+                                                                      "نص بسيط"
+                                                                  ? "ara"
+                                                                  : "eng")
+                                                          .then((value) =>
+                                                              Navigator.pop(context));
+                                                    }
+                                                  },
+                                                  child: Container(
+                                                    alignment: Alignment.center,
+                                                    height: 100,
+                                                    width: 120,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius.circular(15),
+                                                        color: primaryColor),
+                                                    child: Text(
+                                                      tr("mathProblem", context),
+                                                      style: const TextStyle(
+                                                          color: Colors.white),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                width: 5,
+                                              ),
+                                              Expanded(
+                                                child: InkWell(
+                                                  onTap: () async {
+                                                    //runFilePiker(ImageSource.gallery);
+                                                    var image = await pickImage();
+                                                    if (image != null) {
+                                                      setState(() {
+                                                        isMath = false;
+                                                      });
+                                                      await uploadImage(
+                                                              image,
+                                                              context,
+                                                              "l",
+                                                              tr("simpleText",
+                                                                          context) ==
+                                                                      "نص بسيط"
+                                                                  ? "ara"
+                                                                  : "eng")
+                                                          .then((value) =>
+                                                              Navigator.pop(context));
+                                                    }
+                                                  },
+                                                  child: Container(
+                                                    alignment: Alignment.center,
+                                                    height: 100,
+                                                    width: 120,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius.circular(15),
+                                                        color: Colors.grey),
+                                                    child: Text(
+                                                        tr("simpleText", context)),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ));
+                              } else {
+                                await Permission.camera.request();
+                              }
+                            },
+                            icon: Icon(
+                              Icons.camera_alt,
+                              color: primaryColor,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              showDialog(
+                                  context: context,
+                                  builder: (_) => AlertDialog(
+                                        title: Text(tr("chooseImageType", context)),
+                                        content: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            Expanded(
+                                              child: InkWell(
+                                                onTap: () async {
+                                                  //runFilePiker(ImageSource.gallery);
+                                                  var image = await pickImage();
+                                                  if (image != null) {
+                                                    setState(() {
+                                                      isMath = true;
+                                                    });
+                                                    await uploadImage(
+                                                            image,
+                                                            context,
+                                                            "m",
+                                                            tr("simpleText",
+                                                                        context) ==
+                                                                    "نص بسيط"
+                                                                ? "ara"
+                                                                : "eng")
+                                                        .then((value) =>
+                                                            Navigator.pop(context));
+                                                  }
+                                                },
+                                                child: Container(
+                                                  alignment: Alignment.center,
+                                                  height: 100,
+                                                  width: 120,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(15),
+                                                      color: primaryColor),
+                                                  child: Text(
+                                                    tr("mathProblem", context),
+                                                    style: const TextStyle(
+                                                        color: Colors.white),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              width: 5,
+                                            ),
+                                            Expanded(
+                                              child: InkWell(
+                                                onTap: () async {
+                                                  //runFilePiker(ImageSource.gallery);
+                                                  var image = await pickImage();
+                                                  if (image != null) {
+                                                    setState(() {
+                                                      isMath = false;
+                                                    });
+                                                    await uploadImage(
+                                                            image,
+                                                            context,
+                                                            "l",
+                                                            tr("simpleText",
+                                                                        context) ==
+                                                                    "نص بسيط"
+                                                                ? "ara"
+                                                                : "eng")
+                                                        .then((value) =>
+                                                            Navigator.pop(context));
+                                                  }
+                                                },
+                                                child: Container(
+                                                  alignment: Alignment.center,
+                                                  height: 100,
+                                                  width: 120,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(15),
+                                                      color: Colors.grey),
+                                                  child:
+                                                      Text(tr("simpleText", context)),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ));
+                            },
+                            icon: Icon(
+                              Icons.camera,
+                              color: primaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -307,11 +435,12 @@ class _ChatScreenState extends State<ChatScreen> {
     return null;
   }
 
-  Future<void> uploadImage(
-      imageFile, BuildContext context, String imageType) async {
+  Future<void> uploadImage(imageFile, BuildContext context, String imageType,
+      String language) async {
+
     final modelsProvider = Provider.of<ModelsProvider>(context, listen: false);
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
-    String apiUrl = "https://pyocr-b3169decc152.herokuapp.com/ocr";
+    String apiUrl = "http://64.23.164.38:5000/ocr";
     var uri = Uri.parse(apiUrl);
     var request = http.MultipartRequest('POST', uri);
     request.files.add(await http.MultipartFile.fromPath(
@@ -319,17 +448,19 @@ class _ChatScreenState extends State<ChatScreen> {
       imageFile!.path,
     ));
     request.fields['language'] = imageType;
+    request.fields["config"]=language;
     try {
+      getIt<LoadingHelper>().showLoadingDialog();
       var response = await request.send();
       if (response.statusCode == 200) {
         var responseBody = await http.Response.fromStream(response);
         question = jsonDecode(responseBody.body)["result"];
-        log(question);
-        String textBefore = question;
+        question.replaceAll('\$', '');
+        String textBefore = question.replaceAll('\$', '');
         if (imageType == "m") {
-          question = "write the equation and solve it $textBefore";
+          question = textBefore.replaceAll('\$', '');
         }
-
+        getIt<LoadingHelper>().dismissDialog();
         sendMessageFCT(
           isFormImage: true,
           modelsProvider: modelsProvider,
@@ -378,7 +509,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   String _question(bool isFromImage) {
     if (isFromImage) {
-      return question;
+      return question.replaceAll('\$', '');
     } else {
       return textEditingController.text;
     }
@@ -417,7 +548,7 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() {
         _isTyping = true;
         // chatList.add(ChatModel(msg: textEditingController.text, chatIndex: 0));
-        chatProvider.addUserMessage(msg: msg);
+        chatProvider.addUserMessage(msg: msg, isMath: isMath);
         if (!isFormImage) {
           textEditingController.clear();
         }
@@ -456,9 +587,10 @@ class _ChatScreenState extends State<ChatScreen> {
         }
       }
       await chatProvider.sendMessageAndGetAnswers(
+        isMath: isMath,
         msg: msg,
         chosenModelId: modelsProvider.getCurrentModel,
-        tokens: parsedUser.isPayment == true ? 4000 : 200,
+        tokens: 4000, //parsedUser.isPayment == true ? 4000 : 1000,
       );
       _isTyping = false;
       await firestore.collection("history").doc(uid).collection("history").add(

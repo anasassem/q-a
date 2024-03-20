@@ -1,8 +1,10 @@
 part of 'dash_board_imports.dart';
 
 class DashBoardController {
-  final TextEditingController termsAnnConditions = TextEditingController();
-  final TextEditingController privacyPolicy = TextEditingController();
+  final TextEditingController termsAnnConditionsAr = TextEditingController();
+  final TextEditingController termsAnnConditionsEn = TextEditingController();
+  final TextEditingController privacyPolicyAr = TextEditingController();
+  final TextEditingController privacyPolicyEn = TextEditingController();
   final TextEditingController notification = TextEditingController();
   final TextEditingController apiKey = TextEditingController();
   final TextEditingController appLink = TextEditingController();
@@ -25,8 +27,10 @@ class DashBoardController {
     final parsedData = DashBoardModel.fromJson(data.data()!);
     dashBoardData.onUpdateData(parsedData);
     appLink.text = parsedData.appLink ?? "";
-    termsAnnConditions.text = dashBoardData.state.data?.terms ?? "";
-    privacyPolicy.text = dashBoardData.state.data?.privacy ?? "";
+    termsAnnConditionsAr.text = dashBoardData.state.data?.termsAr ?? "";
+    termsAnnConditionsEn.text = dashBoardData.state.data?.termsEn ?? "";
+    privacyPolicyAr.text = dashBoardData.state.data?.privacyAr ?? "";
+    privacyPolicyEn.text = dashBoardData.state.data?.privacyEn ?? "";
     apiKey.text = dashBoardData.state.data?.apiKey ??"" ;
     imagesBloc.state.data.addAll(dashBoardData.state.data?.images ?? []);
     imagesBloc.onUpdateData(imagesBloc.state.data);
@@ -50,8 +54,10 @@ class DashBoardController {
       await firestore.collection("dashBoard").doc("dashBoard").set(
         {
           "imgs": images,
-          "terms": termsAnnConditions.text,
-          "privacy": privacyPolicy.text,
+          "terms_ar": termsAnnConditionsAr.text,
+          "terms_en": termsAnnConditionsEn.text,
+          "privacy_ar": privacyPolicyAr.text,
+          "privacy_en": privacyPolicyEn.text,
           "api_key": apiKey.text,
           "app_link": appLink.text
         },
@@ -149,13 +155,25 @@ class DashBoardController {
     );
   }
 
-  Future<void> setTermsAndConditions(BuildContext context) async {
+  Future<void> setTermsAndConditionsAr(BuildContext context) async {
     try {
       firestore
           .collection("termsAndConditions")
           .doc("pGlT2mGxkdylN1akmauw")
           .update(
-        {"terms": termsAnnConditions.text},
+        {"terms_ar": termsAnnConditionsAr.text},
+      );
+      _successDialog(context);
+    } catch (e) {
+      print("error");
+    }
+  }  Future<void> setTermsAndConditionsEn(BuildContext context) async {
+    try {
+      firestore
+          .collection("termsAndConditions")
+          .doc("pGlT2mGxkdylN1akmauw")
+          .update(
+        {"terms_en": termsAnnConditionsEn.text},
       );
       _successDialog(context);
     } catch (e) {
@@ -163,10 +181,19 @@ class DashBoardController {
     }
   }
 
-  Future<void> setPrivacyPolicy(BuildContext context) async {
+  Future<void> setPrivacyPolicyAr(BuildContext context) async {
     try {
       firestore.collection("privacyPolicy").doc("JDjo3ve94fD8b1h3wFFz").update(
-        {"privacy_policy": privacyPolicy.text},
+        {"privacy_policy": privacyPolicyAr.text},
+      );
+      _successDialog(context);
+    } catch (e) {
+      log(e.toString());
+    }
+  }  Future<void> setPrivacyPolicyEn(BuildContext context) async {
+    try {
+      firestore.collection("privacyPolicy").doc("JDjo3ve94fD8b1h3wFFz").update(
+        {"privacy_policy": privacyPolicyAr.text},
       );
       _successDialog(context);
     } catch (e) {

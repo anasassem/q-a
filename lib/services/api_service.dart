@@ -11,9 +11,9 @@ import 'package:http/http.dart' as http;
 
 class ApiService {
   static String? apiKey = GlobalState.instance.get("api_key");
+
   static Future<List<ModelsModel>> getModels(BuildContext context) async {
     try {
-
       var response = await http.get(
         Uri.parse("$BASE_URL/models"),
         headers: {'Authorization': 'Bearer $apiKey'},
@@ -40,8 +40,12 @@ class ApiService {
 
   // Send Message using ChatGPT API
   static Future<List<ChatModel>> sendMessageGPT(
-      {required String message, required String modelId , required int tokens}) async {
+      {required String message,
+      required String modelId,
+      required int tokens,
+      required bool isMath}) async {
     try {
+      log("!!!!!!!!!!!!!!!!!!$message");
       log("modelId $modelId");
       var response = await http.post(
         Uri.parse("$BASE_URL/chat/completions"),
@@ -62,6 +66,7 @@ class ApiService {
           },
         ),
       );
+      print("####################");
       // Map jsonResponse = jsonDecode(response.body);
       Map jsonResponse = json.decode(utf8.decode(response.bodyBytes));
       if (jsonResponse['error'] != null) {
@@ -74,6 +79,7 @@ class ApiService {
         chatList = List.generate(
           jsonResponse["choices"].length,
           (index) => ChatModel(
+            isMath: true,
             msg: jsonResponse["choices"][index]["message"]["content"],
             chatIndex: 1,
           ),
@@ -88,7 +94,10 @@ class ApiService {
 
   // Send Message fct
   static Future<List<ChatModel>> sendMessage(
-      {required String message, required String modelId, required  int tokens}) async {
+      {required String message,
+      required String modelId,
+      required int tokens,
+      required bool isMath}) async {
     try {
       log("modelId $modelId");
       var response = await http.post(
@@ -105,6 +114,8 @@ class ApiService {
           },
         ),
       );
+      log(isMath ? "write math problem and solve it $message" : message);
+      print("@@@@@@@@@@@@@@@@@@@@@@@@$message");
       // Map jsonResponse = jsonDecode(response.body);
       Map jsonResponse = json.decode(utf8.decode(response.bodyBytes));
       if (jsonResponse['error'] != null) {
@@ -117,6 +128,7 @@ class ApiService {
         chatList = List.generate(
           jsonResponse["choices"].length,
           (index) => ChatModel(
+            isMath: true,
             msg: jsonResponse["choices"][index]["text"],
             chatIndex: 1,
           ),

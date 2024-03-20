@@ -20,12 +20,14 @@ class ChatWidget extends StatelessWidget {
     required this.msg,
     required this.chatIndex,
     this.shouldAnimate = false,
+    this.isMath = false,
     required this.listScrollController,
   });
 
   final String msg;
   final int chatIndex;
   final bool shouldAnimate;
+  final bool isMath;
   final ScrollController listScrollController;
 
   @override
@@ -54,6 +56,7 @@ class ChatWidget extends StatelessWidget {
                   Expanded(
                     child: chatIndex == 0
                         ? TextWidget(
+                            isMath: isMath,
                             label: msg,
                           )
                         : shouldAnimate

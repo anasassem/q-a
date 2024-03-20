@@ -180,7 +180,7 @@ class BuildPayOptions extends StatelessWidget {
                             borderRadius: BorderRadius.circular(25),
                           ),
                           child:  Text(
-                            "Save 70 %",
+                            tr("save70", context),
                             style: AppTextStyle.s14_w600(
                               color: Colors.black,
                             ),

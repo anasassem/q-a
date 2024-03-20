@@ -10,27 +10,31 @@ class ChatProvider with ChangeNotifier {
     return chatList;
   }
 
-  void addUserMessage({required String msg}) {
-    chatList.add(ChatModel(msg: msg, chatIndex: 0));
+  void addUserMessage({required String msg, required bool isMath}) {
+    chatList.add(ChatModel(isMath: isMath, msg: msg, chatIndex: 0));
     notifyListeners();
   }
 
   Future<void> sendMessageAndGetAnswers(
       {required int tokens,
       required String msg,
+      required bool isMath,
       required String chosenModelId}) async {
+    msg = isMath ? "write math problem and solve it $msg" : msg;
     if (chosenModelId.toLowerCase().startsWith("gpt")) {
       chatList.addAll((await ApiService.sendMessageGPT(
+        isMath: isMath,
         message: msg,
         modelId: chosenModelId,
         tokens: tokens,
-      )) as Iterable<ChatModel>);
+      )));
     } else {
       chatList.addAll((await ApiService.sendMessage(
+        isMath: isMath,
         message: msg,
         tokens: tokens,
         modelId: chosenModelId,
-      )) as Iterable<ChatModel>);
+      )));
     }
     notifyListeners();
   }

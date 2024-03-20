@@ -1,16 +1,24 @@
 part of 'terms_imports.dart';
 
 class TermsData {
-  final GenericBloc<String> termsBloc = GenericBloc("");
+  final GenericBloc<String> termsBlocAr = GenericBloc("");
+  final GenericBloc<String> termsBlocEn = GenericBloc("");
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   TermsData (){
-    getTerms();
+    getTermsAr();
+    getTermsEn();
   }
 
-  Future<void> getTerms ()async {
+  Future<void> getTermsAr ()async {
     var data = await firestore.collection("dashBoard").doc("dashBoard").get();
     var parsedData = DashBoardModel.fromJson(data.data()!);
-    termsBloc.onUpdateData(parsedData.terms!);
+    termsBlocAr.onUpdateData(parsedData.termsAr!);
+  }
+
+  Future<void> getTermsEn ()async {
+    var data = await firestore.collection("dashBoard").doc("dashBoard").get();
+    var parsedData = DashBoardModel.fromJson(data.data()!);
+    termsBlocEn.onUpdateData(parsedData.termsEn!);
   }
 }

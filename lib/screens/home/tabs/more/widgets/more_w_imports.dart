@@ -12,5 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../../core/localization/localization_methods.dart';
+
 part 'build_more_item.dart';
 part 'build_lang_bottom_sheet.dart';

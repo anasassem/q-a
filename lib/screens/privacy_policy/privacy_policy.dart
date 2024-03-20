@@ -31,7 +31,7 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
             color: Colors.black,
           ),
         ),
-        title:  Text( tr("privacyPolicy", context),
+        title: Text(tr("privacyPolicy", context),
             style: const AppTextStyle.s16_w700(color: Colors.black)),
       ),
       body: SingleChildScrollView(
@@ -40,7 +40,9 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
           vertical: Dimens.dp20,
         ),
         child: BlocBuilder<GenericBloc<String>, GenericState<String>>(
-          bloc: controller.privacyPolicyBloc,
+          bloc: tr("privacyPolicy", context) == "سياسة الخصوصية"
+              ? controller.privacyPolicyBlocAr
+              : controller.privacyPolicyBlocEn,
           builder: (context, state) {
             return Column(
               children: [
