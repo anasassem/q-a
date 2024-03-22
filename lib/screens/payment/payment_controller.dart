@@ -33,7 +33,6 @@ class PaymentController {
 
   void onSkipPayment(BuildContext context) async {
     var uid = await GetDeviceId().deviceId;
-
     if (payOptionsBloc.state.data == PayOptions.daysFree) {
       await FirebaseFirestore.instance.collection("users").doc(uid).update(
         {
@@ -98,7 +97,7 @@ class PaymentController {
       await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (BuildContext context) => UsePaypal(
-              sandboxMode: true,
+              sandboxMode: false,
               clientId:
                   "Ac62hHhjjyv4cJUUXMF_ZnciVSF0YLzdi_bLtDgYLTK2JwEd-1woK_SPdOZi_DX2BdwJDIJtO8b07F-K",
               secretKey:

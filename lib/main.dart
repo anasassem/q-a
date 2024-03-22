@@ -27,7 +27,6 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await AppNotifications().setupNotification();
-
   await configureDependencies();
   await DioHelper.init();
   runApp(const MyApp());

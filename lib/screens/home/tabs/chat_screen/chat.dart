@@ -368,8 +368,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void runFilePiker(ImageSource) async {
     // android && ios only
-    final pickedFile = await ImagePicker()
-        .pickImage(source: ImageSource, requestFullMetadata: true);
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource, requestFullMetadata: true);
     if (pickedFile != null) {
       await ImageCropper().cropImage(
         sourcePath: pickedFile.path,
