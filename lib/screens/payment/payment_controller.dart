@@ -80,28 +80,13 @@ class PaymentController {
 
   void onPayment(BuildContext context) async {
     var uid = await GetDeviceId().deviceId;
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    var data = await firestore.collection("users").doc(uid).get();
-    var parsedUser = UserModel.fromJson(data.data()!);
-
-/*    if(payOptionsBloc.state.data==PayOptions.daysFree){
-      if(parsedUser.usedFree == true){
-        CustomToast.showSimpleToast(msg: tr("youUsedFreeTrial", context));
-        return;
-      }
-    }
-  */
     handleDaysFreeSubscription(context);
-
     if (payOptionsBloc.state.data != PayOptions.daysFree) {
       await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (BuildContext context) => UsePaypal(
-              sandboxMode: false,
-              clientId:
-                  "Ac62hHhjjyv4cJUUXMF_ZnciVSF0YLzdi_bLtDgYLTK2JwEd-1woK_SPdOZi_DX2BdwJDIJtO8b07F-K",
-              secretKey:
-                  "EKGmKp2--2FN-Bljo3T_BnWgmwJF3GgdQIpodxnAS1ulS0yApcdexuVrKCDz14dqUzvYn-cYbiyDiLer",
+              clientId: "AXdLx_QxCmHavl6E4B5IMxt3i_-XFq0KRKT2z6xYBD-knRwkGp1GG_PNrJ0LCh37oW1fzEr1j0DJ9nfQ",
+              secretKey: "EMqvVwaO4QM8Qt45ITV8Pkx9vAMgkyjjMHHbMNcZw1AY4cvUJObDpRRBVjTpQCwfSkolDArwz6IZXeuT",
               returnURL: "https://samplesite.com/return",
               cancelURL: "https://samplesite.com/cancel",
               transactions: [
@@ -125,16 +110,6 @@ class PaymentController {
                         "currency": "USD"
                       }
                     ],
-                    "shipping_address": const {
-                      "recipient_name": "Jane Foster",
-                      "line1": "Travis County",
-                      "line2": "",
-                      "city": "Austin",
-                      "country_code": "US",
-                      "postal_code": "73301",
-                      "phone": "+00000000",
-                      "state": "Texas"
-                    },
                   }
                 }
               ],
